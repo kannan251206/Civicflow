@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Search, ArrowRight, ExternalLink, Globe, Grid } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
+import { ServiceLogo } from '@/components/ui/ServiceLogo'
 import { useLanguage } from '@/context/LanguageContext'
 import { services } from '@/data/services'
 import type { ServiceCategory } from '@/types'
@@ -102,24 +103,32 @@ export function GovernmentServicesPage() {
             <table className="w-full text-left text-sm">
               <thead className="bg-[#1e293b] text-xs uppercase tracking-wider text-slate-100">
                 <tr>
-                  <th scope="col" className="w-16 px-4 py-3.5 text-center font-bold">No.</th>
-                  <th scope="col" className="px-6 py-3.5 font-bold">Service</th>
-                  <th scope="col" className="px-6 py-3.5 font-bold">Official Portal / Organization</th>
-                  <th scope="col" className="px-6 py-3.5 font-bold">Official Website</th>
-                  <th scope="col" className="w-32 px-4 py-3.5 text-center font-bold">Action</th>
+                  <th scope="col" className="w-14 px-3 py-3.5 text-center font-bold">No.</th>
+                  <th scope="col" className="px-5 py-3.5 font-bold">Service &amp; Organization</th>
+                  <th scope="col" className="px-5 py-3.5 font-bold">Official Portal</th>
+                  <th scope="col" className="px-5 py-3.5 font-bold">Official Website</th>
+                  <th scope="col" className="w-28 px-4 py-3.5 text-center font-bold">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line bg-surface">
                 {filtered.map((s, idx) => (
                   <tr key={s.id} className="transition-colors hover:bg-canvas/60">
-                    <td className="px-4 py-4 text-center font-medium text-ink-soft">{idx + 1}</td>
-                    <td className="px-6 py-4">
-                      <Link to={`/app/services/${s.id}`} className="font-medium text-ink hover:text-brand-600">
-                        {tb(s.name)}
-                      </Link>
+                    <td className="px-3 py-4 text-center font-medium text-ink-soft">{idx + 1}</td>
+                    <td className="px-5 py-4">
+                      <div className="flex items-center gap-3">
+                        <ServiceLogo serviceId={s.id} portalName={s.portalName} size="sm" />
+                        <div className="min-w-0">
+                          <Link to={`/app/services/${s.id}`} className="font-semibold text-ink hover:text-brand-600 transition-colors">
+                            {tb(s.name)}
+                          </Link>
+                          <p className="text-xs text-ink-soft line-clamp-1">{tb(s.department)}</p>
+                        </div>
+                      </div>
                     </td>
-                    <td className="px-6 py-4 font-medium text-ink-soft">{s.portalName}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-5 py-4">
+                      <Badge tone="brand" className="font-medium text-xs">{s.portalName}</Badge>
+                    </td>
+                    <td className="px-5 py-4">
                       <a
                         href={s.officialUrl}
                         target="_blank"
@@ -133,7 +142,7 @@ export function GovernmentServicesPage() {
                     <td className="px-4 py-4 text-center">
                       <Link
                         to={`/app/services/${s.id}`}
-                        className="inline-flex items-center gap-1 rounded-lg bg-brand-50 px-2.5 py-1.5 text-xs font-semibold text-brand-600 hover:bg-brand-100"
+                        className="inline-flex items-center gap-1 rounded-lg bg-brand-50 px-2.5 py-1.5 text-xs font-semibold text-brand-600 hover:bg-brand-100 transition-colors"
                       >
                         Guide <ArrowRight size={12} />
                       </Link>
@@ -154,16 +163,24 @@ export function GovernmentServicesPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((s) => (
-            <Card key={s.id} className="flex flex-col">
-              <div className="mb-2 flex items-start justify-between">
-                <p className="font-semibold text-ink">{tb(s.name)}</p>
-                <Badge tone="brand">{s.portalName}</Badge>
+            <Card key={s.id} className="flex flex-col group hover:border-brand-300 hover:shadow-md transition-all duration-200">
+              <div className="mb-3 flex items-start gap-3">
+                <ServiceLogo serviceId={s.id} portalName={s.portalName} size="md" />
+                <div className="flex-1 min-w-0">
+                  <Link to={`/app/services/${s.id}`} className="font-semibold text-ink hover:text-brand-600 transition-colors line-clamp-1">
+                    {tb(s.name)}
+                  </Link>
+                  <p className="text-xs text-ink-soft line-clamp-1 mt-0.5">{tb(s.department)}</p>
+                  <div className="mt-1.5">
+                    <Badge tone="brand" className="text-[11px] py-0.5 px-2">{s.portalName}</Badge>
+                  </div>
+                </div>
               </div>
-              <p className="mb-1 text-xs text-ink-soft">{tb(s.department)}</p>
-              <p className="mb-3 flex-1 text-sm text-ink-soft">{tb(s.description)}</p>
+
+              <p className="mb-3 flex-1 text-sm text-ink-soft line-clamp-2">{tb(s.description)}</p>
 
               <div className="mb-4 rounded-xl border border-line bg-canvas p-2.5">
-                <p className="text-xs font-semibold uppercase tracking-wider text-ink-soft">Official Portal</p>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-soft">OFFICIAL PORTAL</p>
                 <a
                   href={s.officialUrl}
                   target="_blank"
@@ -176,7 +193,7 @@ export function GovernmentServicesPage() {
 
               <Link
                 to={`/app/services/${s.id}`}
-                className="focus-ring inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand-50 px-3 py-2 text-sm font-medium text-brand-600 hover:bg-brand-100"
+                className="focus-ring inline-flex items-center justify-center gap-1.5 rounded-xl bg-brand-50 px-3 py-2 text-sm font-medium text-brand-600 hover:bg-brand-100 transition-colors"
               >
                 {t('start_service')} <ArrowRight size={14} />
               </Link>

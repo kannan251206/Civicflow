@@ -3,6 +3,7 @@ import { useSearchParams, Link } from 'react-router-dom'
 import { Send, Bot, User as UserIcon, Info, ExternalLink } from 'lucide-react'
 import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
+import { ServiceLogo } from '@/components/ui/ServiceLogo'
 import { useLanguage } from '@/context/LanguageContext'
 import { getAssistantReply } from '@/lib/mockAssistant'
 import { findServiceById } from '@/data/services'
@@ -12,9 +13,12 @@ function ServiceMiniCard({ service }: { service: GovService }) {
   const { tb, t } = useLanguage()
   return (
     <Card className="mt-2 max-w-lg" padded>
-      <div className="mb-2 flex items-center justify-between">
-        <p className="font-semibold text-ink">{tb(service.name)}</p>
-        <Badge tone="brand">{service.portalName}</Badge>
+      <div className="mb-2 flex items-center gap-3">
+        <ServiceLogo serviceId={service.id} portalName={service.portalName} size="sm" />
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-ink line-clamp-1">{tb(service.name)}</p>
+          <Badge tone="brand" className="text-[10px] py-0 px-1.5">{service.portalName}</Badge>
+        </div>
       </div>
       <p className="mb-3 text-sm text-ink-soft">{tb(service.description)}</p>
       <div className="mb-3 grid gap-2 text-sm sm:grid-cols-2">

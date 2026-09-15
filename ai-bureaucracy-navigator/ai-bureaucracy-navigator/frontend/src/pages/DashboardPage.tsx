@@ -1,10 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { Send, ShieldCheck, BadgeCheck, FileCheck2, Route, BellRing, ArrowRight } from 'lucide-react'
+import { Send, ShieldCheck, BadgeCheck, Route, BellRing, ArrowRight } from 'lucide-react'
 import { useState } from 'react'
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { ProgressBar } from '@/components/ui/ProgressBar'
 import { Button } from '@/components/ui/Button'
+import { ServiceLogo } from '@/components/ui/ServiceLogo'
 import { useAuth } from '@/context/AuthContext'
 import { useLanguage } from '@/context/LanguageContext'
 import { useAppData } from '@/context/AppDataContext'
@@ -60,8 +61,8 @@ export function DashboardPage() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && goToAssistant()}
-                placeholder="e.g. I want to start a bakery in Chennai"
-                className="focus-ring w-full max-w-xl rounded-xl border border-line bg-canvas px-4 py-2.5 text-sm"
+                placeholder={t('search_placeholder')}
+                className="focus-ring w-full max-w-lg rounded-xl border border-line bg-canvas px-4 py-2.5 text-sm"
               />
               <Button onClick={goToAssistant} icon={<Send size={14} />}>
                 Ask
@@ -76,8 +77,9 @@ export function DashboardPage() {
                   <Link
                     key={id}
                     to={`/app/services/${id}`}
-                    className="focus-ring rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-soft hover:bg-canvas"
+                    className="focus-ring inline-flex items-center gap-1.5 rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink-soft hover:bg-canvas hover:text-ink transition-colors"
                   >
+                    <ServiceLogo serviceId={s.id} portalName={s.portalName} size="xs" />
                     {tb(s.name)}
                   </Link>
                 )
@@ -97,9 +99,12 @@ export function DashboardPage() {
             <Card>
               <CardHeader
                 title={
-                  <span className="flex items-center gap-2">
-                    <Route size={16} className="text-brand-500" /> My Roadmap — {tb(activeService.name)}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <ServiceLogo serviceId={activeService.id} portalName={activeService.portalName} size="sm" />
+                    <span className="flex items-center gap-2">
+                      <Route size={16} className="text-brand-500" /> My Roadmap — {tb(activeService.name)}
+                    </span>
+                  </div>
                 }
                 action={
                   <Link to="/app/roadmap" className="text-sm font-medium text-brand-600">
@@ -189,23 +194,26 @@ export function DashboardPage() {
               }
             />
             <div className="divide-y divide-line">
-              {applications.length === 0 && <p className="py-4 text-sm text-ink-soft">No applications yet.</p>}
               {applications.map((app) => {
-                const service = findServiceById(app.serviceId)
-                if (!service) return null
+                const s = findServiceById(app.serviceId)
                 return (
-                  <div key={app.id} className="flex flex-wrap items-center gap-3 py-3">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
-                      <FileCheck2 size={16} />
-                    </span>
-                    <div className="min-w-[140px] flex-1">
-                      <p className="text-sm font-medium text-ink">{tb(service.name)}</p>
-                      <p className="text-xs text-ink-soft">Started {app.dateStarted}</p>
+                  <div key={app.id} className="flex items-center justify-between py-3 first:pt-0 last:pb-0">
+                    <div className="flex items-center gap-3">
+                      {s && <ServiceLogo serviceId={s.id} portalName={s.portalName} size="xs" />}
+                      <div>
+                        <p className="text-sm font-semibold text-ink">{s ? tb(s.name) : 'Application'}</p>
+                        <p className="font-mono text-xs text-ink-soft">{app.applicationRef}</p>
+                      </div>
                     </div>
-                    <Badge tone={statusTone[app.status]}>{statusLabel[app.status]}</Badge>
-                    <Link to={`/app/tracker`} className="text-sm font-medium text-brand-600">
-                      {app.status === 'completed' ? t('view_details') : t('track_now')}
-                    </Link>
+                    <div className="flex items-center gap-3">
+                      <Badge tone={statusTone[app.status]}>{statusLabel[app.status]}</Badge>
+                      <Link
+                        to={`/app/roadmap`}
+                        className="rounded-lg bg-canvas px-2.5 py-1 text-xs font-medium text-ink hover:bg-brand-50 hover:text-brand-600 transition-colors"
+                      >
+                        Step {app.currentStepIndex + 1}
+                      </Link>
+                    </div>
                   </div>
                 )
               })}
@@ -214,7 +222,7 @@ export function DashboardPage() {
         </div>
 
         <div className="space-y-6">
-          {/* Profile completion */}
+          {/* Profile overview */}
           {user && (
             <Card>
               <CardHeader title="My Profile" action={<Link to="/app/profile" className="text-sm font-medium text-brand-600">{t('view_all')}</Link>} />
@@ -252,11 +260,15 @@ export function DashboardPage() {
                     const step = s?.steps[app.currentStepIndex]
                     return (
                       <div key={app.id} className="flex items-start gap-2.5">
-                        <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-canvas text-ink-soft">
-                          <BellRing size={14} />
-                        </span>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-ink">{s ? tb(s.name) : 'Application'}</p>
+                        {s ? (
+                          <ServiceLogo serviceId={s.id} portalName={s.portalName} size="xs" />
+                        ) : (
+                          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-canvas text-ink-soft">
+                            <BellRing size={14} />
+                          </span>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-ink truncate">{s ? tb(s.name) : 'Application'}</p>
                           <p className="text-xs text-ink-soft">Step {app.currentStepIndex + 1}: {step ? tb(step.title) : 'In progress'}</p>
                         </div>
                         <Badge tone="warn">Pending</Badge>
@@ -275,10 +287,10 @@ export function DashboardPage() {
                 <Link
                   key={s.id}
                   to={`/app/services/${s.id}`}
-                  className="focus-ring flex items-center justify-between rounded-xl border border-line px-3 py-2.5 text-xs font-medium text-ink hover:bg-canvas"
+                  className="focus-ring flex items-center gap-2 rounded-xl border border-line p-2 text-xs font-medium text-ink hover:bg-canvas hover:border-brand-200 transition-colors"
                 >
-                  {s.shortName}
-                  <ArrowRight size={12} className="text-ink-soft" />
+                  <ServiceLogo serviceId={s.id} portalName={s.portalName} size="xs" />
+                  <span className="truncate">{s.shortName}</span>
                 </Link>
               ))}
             </div>

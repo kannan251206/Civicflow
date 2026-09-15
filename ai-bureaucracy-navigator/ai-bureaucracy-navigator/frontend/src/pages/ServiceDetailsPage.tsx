@@ -3,6 +3,7 @@ import { CheckCircle2, AlertTriangle, ExternalLink, ArrowLeft, Globe } from 'luc
 import { Card, CardHeader } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
+import { ServiceLogo } from '@/components/ui/ServiceLogo'
 import { useLanguage } from '@/context/LanguageContext'
 import { useAppData } from '@/context/AppDataContext'
 import { findServiceById } from '@/data/services'
@@ -37,13 +38,16 @@ export function ServiceDetailsPage() {
         <ArrowLeft size={14} /> Government Services
       </Link>
 
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div className="mb-1 flex items-center gap-2">
-            <h1 className="font-display text-2xl font-bold text-ink">{tb(service.name)}</h1>
-            <Badge tone="brand">{service.portalName}</Badge>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          <ServiceLogo serviceId={service.id} portalName={service.portalName} size="lg" />
+          <div>
+            <div className="mb-1 flex items-center gap-2 flex-wrap">
+              <h1 className="font-display text-2xl font-bold text-ink">{tb(service.name)}</h1>
+              <Badge tone="brand">{service.portalName}</Badge>
+            </div>
+            <p className="text-sm text-ink-soft">{tb(service.department)}</p>
           </div>
-          <p className="text-sm text-ink-soft">{tb(service.department)}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <a
